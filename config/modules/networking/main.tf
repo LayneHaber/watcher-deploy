@@ -3,6 +3,10 @@ data "aws_availability_zones" "available" {}
 resource "aws_vpc" "main" {
   cidr_block           = var.cidr_block
   enable_dns_hostnames = true
+
+  tags = {
+    Name = var.ecs_cluster_name
+  }
 }
 
 resource "aws_subnet" "main" {
@@ -14,6 +18,9 @@ resource "aws_subnet" "main" {
   depends_on              = [aws_internet_gateway.main]
   map_public_ip_on_launch = true
 
+  tags = {
+    Name = "${var.ecs_cluster_name}-public-subnet-${count.index}"
+  }
 }
 
 resource "aws_subnet" "private" {
@@ -25,6 +32,9 @@ resource "aws_subnet" "private" {
   cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index)
   depends_on        = [aws_internet_gateway.main]
 
+  tags = {
+    Name = "${var.ecs_cluster_name}-private-subnet-${count.index}"
+  }
 }
 
 resource "aws_internet_gateway" "main" {

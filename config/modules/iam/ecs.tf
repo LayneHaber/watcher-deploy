@@ -19,6 +19,7 @@ data "aws_iam_policy_document" "task_execution_cloudwatch_access" {
     effect = "Allow"
     actions = [
       "logs:*",
+      "secretsmanager:GetSecretValue"
     ]
     resources = [
       "*"

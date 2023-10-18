@@ -12,6 +12,8 @@ variable "lb_subnets" {
 
 variable "docker_image" {}
 variable "container_family" {}
+variable "project_tag" {}
+variable "environment" {}
 
 variable "instance_count" {
   default = 1
@@ -72,4 +74,19 @@ variable "base_domain" {
 
 variable "container_env_vars" {
   description = "env vars for running container"
+}
+
+variable "github_token" {
+  type    = string
+  description = "Github token used to read docker image from private github registry. Generate github personal access token with read:packages access."
+}
+
+variable "redis_url" {
+  type    = string
+  description = "Redis url."
+}
+
+variable "redis_port" {
+  type    = string
+  description = "Redis port."
 }

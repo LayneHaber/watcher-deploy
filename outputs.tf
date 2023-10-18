@@ -9,3 +9,11 @@ output "watcher-dns" {
 output "cluster_name" {
   value = module.ecs.ecs_cluster_name
 }
+
+output "redis_address" {
+  value = module.redis_cache.redis_instance_address
+}
+
+output "redis_port" {
+  value = module.redis_cache.redis_instance_port
+}

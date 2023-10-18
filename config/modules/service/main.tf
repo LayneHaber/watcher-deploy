@@ -15,7 +15,18 @@ resource "aws_cloudwatch_log_group" "container" {
   name = var.container_family
   tags = {
     Family = var.container_family
+    Project = var.project_tag
+    Environment = var.environment
   }
+}
+
+resource "aws_secretsmanager_secret" "github_creds" {
+  name = "github_creds"
+}
+
+resource "aws_secretsmanager_secret_version" "github_creds" {
+  secret_id     = aws_secretsmanager_secret.github_creds.id
+  secret_string = "{\"username\":\"USERNAME\",\"password\":\"${var.github_token}\"}"
 }
 
 resource "aws_ecs_task_definition" "service" {
@@ -27,6 +38,8 @@ resource "aws_ecs_task_definition" "service" {
   execution_role_arn       = var.execution_role_arn
   tags = {
     Family = var.container_family
+    Project = var.project_tag
+    Environment = var.environment
   }
   container_definitions = jsonencode([
     {
@@ -34,7 +47,9 @@ resource "aws_ecs_task_definition" "service" {
       image       = var.docker_image
       cpu         = var.cpu
       memory      = var.memory
-      environment = var.container_env_vars
+      environment = concat(var.container_env_vars, [
+        { name = "REDIS_URL", value = "redis://${var.redis_url}:${var.redis_port}" },
+      ])
       networkMode = "awsvpc"
       logConfiguration = {
         logDriver = "awslogs",
@@ -50,6 +65,9 @@ resource "aws_ecs_task_definition" "service" {
           hostPort      = var.container_port
         }
       ]
+      repositoryCredentials = {
+        credentialsParameter = aws_secretsmanager_secret.github_creds.arn
+      }
     }
   ])
 }
@@ -85,6 +103,8 @@ resource "aws_alb" "lb" {
   idle_timeout               = var.timeout
   tags = {
     Family = var.container_family
+    Project = var.project_tag
+    Environment = var.environment
   }
 }
 
@@ -106,6 +126,8 @@ resource "aws_alb_target_group" "front_end" {
   }
   tags = {
     Family = var.container_family
+    Project = var.project_tag
+    Environment = var.environment
   }
 }
 
@@ -122,6 +144,8 @@ resource "aws_lb_listener" "https" {
   }
   tags = {
     Family = var.container_family
+    Project = var.project_tag
+    Environment = var.environment
   }
 }
 
@@ -147,6 +171,9 @@ resource "aws_security_group" "lb" {
   }
   tags = {
     Family = var.container_family
+    Project = var.project_tag
+    Environment = var.environment
+    
   }
 }
 

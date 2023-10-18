@@ -3,3 +3,8 @@ variable "az_count" {
 }
 
 variable "cidr_block" {}
+
+variable "ecs_cluster_name" {
+  description = "Cluster name"
+  type        = string
+}

@@ -1,6 +1,0 @@
-{
-  "region": "eu-central-1",
-  "base_domain": "connextapi.com",
-  "ecs_cluster_name": "watcher-deploy",
-  "full_image_name_watcher": "ghcr.io/connext/watcher:sha-c58ec29"
-}

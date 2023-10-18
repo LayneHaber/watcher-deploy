@@ -1,46 +1,30 @@
 locals {
   watcher_env_vars = [
-    { name = "WATCHER_CONFIG", value = local.local_watcher_config },
-    { name = "WATCHER_MNEMONIC", value = var.mnemonic },
-    { name = "WATCHER_ADMIN_TOKEN", value = var.admin_token_watcher },
-    { name = "DISCORD_HOOK_URL", value = var.discord_webhook_key != null ? "https://discord.com/api/webhooks/${var.discord_webhook_key}" : null },
-    { name = "TELEGRAM_API_KEY", value = var.telegram_api_key != null ? var.telegram_api_key : null },
-    { name = "TELEGRAM_CHAT_ID", value = var.telegram_chat_id != null ? var.telegram_chat_id : null },
-    { name = "BETTER_UPTIME_API_KEY", value = var.betteruptime_api_key != null ? var.betteruptime_api_key : null },
-    { name = "BETTER_UPTIME_REQUESTER_EMAIL", value = var.betteruptime_requester_email != null ? var.betteruptime_requester_email : null },
-
+    # production environment variables
+    { name = "LOG_LEVEL", value = var.log_level != null ? var.log_level : "debug" },
+    { name = "ENVIRONMENT", value = var.environment != null ? var.environment : "production" },
+    { name = "ASSET_CHECK_INTERVAL", value = var.asset_check_interval },
+    { name = "UPDATE_VARIABLE_INTERVAL", value = var.update_variable_interval },
+    { name = "GAS_MULTIPLIER", value = var.gas_multiplier },
+    { name = "PRIVATE_KEY", value = var.private_key },
+    { name = "WEB3_SIGNER_URL", value = var.web3_signer_url },
+    { name = "DISCORD_HOOK_URL", value = var.discord_hook_url },
+    { name = "PAGER_DUTY_ROUTING_KEY", value = var.pager_duty_routing_key },
+    { name = "SERVER_PORT", value = var.server_port != null ? var.server_port : "8080" },
+    { name = "SERVER_HOST", value = var.server_host },
+    { name = "SERVER_ADMIN_TOKEN", value = var.server_admin_token },
+    { name = "TWILIO_NUMBER", value = var.twilio_number },
+    { name = "TWILIO_TO_PHONE_NUMBERS", value = var.twilio_to_phone_numbers },
+    { name = "TWILIO_ACCOUNT_SID", value = var.twilio_account_sid },
+    { name = "TWILIO_AUTH_TOKEN", value = var.twilio_auth_token },
+    { name = "TELEGRAM_CHAT_ID", value = var.telegram_chat_id },
+    { name = "TELEGRAM_API_KEY", value = var.telegram_api_key },
+    { name = "BETTER_UPTIME_EMAIL", value = var.better_uptime_email },
+    { name = "BETTER_UPTIME_API_KEY", value = var.better_uptime_api_key },
+    { name = "CUSTOM_RPC_PROVIDERS", value = var.custom_rpc_providers },
+    # devnet scripts environment variables
+    { name = "TENDERLY_ACCESS_KEY", value = var.tenderly_access_key },
+    { name = "TENDERLY_ACCOUNT_ID", value = var.tenderly_account_id },
+    { name = "TENDERLY_PROJECT_SLUG", value = var.tenderly_project_slug },
   ]
-}
-
-locals {
-  local_watcher_config = jsonencode({
-    server = {
-      adminToken = var.admin_token_watcher
-      port       = 8080
-
-    }
-    environment = "production"
-    logLevel    = "debug"
-    chains = {
-      "6648936" = {
-        providers = ["https://eth.llamarpc.com", "https://rpc.ankr.com/eth", "https://api.zmok.io/mainnet/oaen6dy8ff6hju9k"]
-      },
-      "1869640809" = {
-        providers = ["https://mainnet.optimism.io", "https://rpc.ankr.com/optimism"]
-      },
-      "1886350457" = {
-        providers = ["https://polygon.llamarpc.com", "https://polygon-bor.publicnode.com", "https://rpc.ankr.com/polygon"]
-      }
-      "1634886255" = {
-        providers = ["https://arb1.arbitrum.io/rpc", "https://rpc.ankr.com/arbitrum"]
-      }
-      "6450786" = {
-        providers = ["https://bsc-dataseed1.binance.org", "https://bsc-dataseed2.binance.org", "https://rpc.ankr.com/bsc", "https://bsc-dataseed1.defibit.io"]
-      }
-      "6778479" = {
-        providers = ["https://rpc.gnosischain.com", "https://rpc.ankr.com/gnosis", "https://xdai-rpc.gateway.pokt.network", "https://rpc.gnosis.gateway.fm"]
-      }
-    }
-    hubDomain = "6648936"
-  })
 }

@@ -19,7 +19,8 @@ config
       ├── service            <- Generic, configurable ECS service
       ├── ecs                <- ECS cluster definition
       ├── iam                <- IAM roles needed for ECS
-      └── networking         <- VPCs, Subnets and all those shenanigans
+      ├── redis              <- Redis cache configuration
+      └── networking         <- VPCs, Subnets and Security Groups
 
 ```
 
@@ -66,7 +67,7 @@ The base domain, of your hosted zone e.g. `connext.ninja`
 
 **3.1.2. Watcher docker image** (`full_image_name_watcher`) \[REQUIRED\]
 
-Fetch it from the desired release on Connext's [Github Packages](https://github.com/connext/monorepo/pkgs/container/watcher), e.g. `ghcr.io/connext/watcher:sha-b5bb49a`
+Fetch it from the desired release on Connext's [Github Packages](https://github.com/connext/monorepo/pkgs/container/watcher), e.g. `ghcr.io/connext/watcher:sha-bab495d`
 
 **3.1.3. ECS Cluster Name** (`ecs_cluster_name`) \[REQUIRED\]
 
@@ -84,34 +85,27 @@ These need to be set exactly as named, e.g.
 
 Make sure to edit the `ci.yaml` accordingly, if you plan on using the optional (commented out) variables.
 
-**3.2.1. Mnemonic** (`MNEMONIC`) \[REQUIRED\]
+**To know the possible options:** Check Connext Watcher repository's README file and the `config.tf` in this repository.
 
-The mnemonic key used by the watcher
+## Try out your watcher
 
-**3.2.2. Watcher's admin token** (`ADMIN_TOKEN_WATCHER`) \[OPTIONAL\]
+Deployment should occur only via CI/CD with Github Actions. However, it is also possible to deploy the infra from a local set up in order to test it in Tenderly Devnets. Ensure you have the right AWS credentials and `terraform 1.4.4` installed as described above.
 
-Randomly generated string for server auth
+**Pre-requirement:** Go to the watcher repository and spin up a testnet using the "How to run the Devnets" section. By default in the `tfvars-devnet.json` the private key is pointed to this address: `0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266` which is a hardhat default account.
 
-**3.2.3. Alerting Secrets** \[OPTIONAL\]
-
-- `DISCORD_WEBHOOK_KEY`
-- `TELEGRAM_API_KEY` and `TELEGRAM_CHAT_ID`
-- `BETTERUPTIME_API_KEY` and `BETTERUPTIME_REQUESTER_EMAIL`
-
-## Deployment & Usage
-
-Deployment should occur only via CICD with Github Actions. However, it is also possible to deploy the infra
-from a local set up. Ensure you have the right AWS credentials and `terraform 1.4.4` installed as described above
-
-Also, you'll need to have set the secrets to your environment:
-
+After that, you'll need to have set the secrets to your environment:
 ```shell
-export TF_VAR_mnemonic="emale autumn drive capable scorpion congress hockey chunk ..."
-export TF_VAR_admin_token_router="foo"
-...
+export TF_VAR_private_key="0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+export TF_VAR_server_admin_token="foo"
+export TF_VAR_environment="devnet"
+export TF_VAR_tenderly_access_key="<Your Tenderly access key>"
+export TF_VAR_tenderly_account_id="<Your Tenderly account id>"
+export TF_VAR_tenderly_project_slug="<Your Tenderly project slug>"
+export TF_VAR_github_token="<Github personal access token with read:packages access>"
+export TF_VAR_custom_rpc_providers="<The Devnet RPCs given by the devnet spawn command in the watcher repository>"
 ```
 
-From top level:
+In order to setup your devnet watcher environment in AWS use:
 
 ```shell
 >>> terraform init
@@ -120,11 +114,12 @@ From top level:
 Plan the changes:
 
 ```shell
->>> terraform plan -var-file=tfvars.json
+>>> terraform plan -var-file=tfvars-devnet.json
 ```
 
-To set custom variables, you can set them with `export TF_ENV_<variable_name>=<variable value>` or use the `tfvars.json` file.
+To set custom variables, you can set them with `export TF_ENV_<variable_name>=<variable value>` or use the `tfvars-devnet.json` file.
 
 ```shell
->>> terraform apply var-file=tfvars.json -auto-approve
+>>> terraform apply -var-file=tfvars-devnet.json -auto-approve
 ```
+
