@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "test-tf-state-watcher"
+    bucket = "connext-terraform-watcher-v2"
     key    = "state"
     region = "eu-central-1"
   }
@@ -24,7 +24,6 @@ module "watcher" {
   execution_role_arn       = module.iam.execution_role_arn
   cluster_id               = module.ecs.ecs_cluster_id
   vpc_id                   = module.network.vpc_id
-  private_subnets          = module.network.private_subnets
   lb_subnets               = module.network.public_subnets
   docker_image             = var.full_image_name_watcher
   container_family         = var.ecs_cluster_name
@@ -60,8 +59,8 @@ module "redis_cache" {
 }
 
 module "network" {
-  source     = "./config/modules/networking"
-  cidr_block = var.cidr_block
+  source           = "./config/modules/networking"
+  cidr_block       = var.cidr_block
   ecs_cluster_name = var.ecs_cluster_name
 }
 
