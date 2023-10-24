@@ -30,7 +30,7 @@ env:
   TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  deploy-infra:
+  deploy-testnet-staging:
     runs-on: ubuntu-latest
     environment: testnet-staging
     name: Deploy Infra to AWS
@@ -60,4 +60,70 @@ jobs:
 
       - name: Terraform Deploy
         working-directory: ./config/testnet-staging
+        run: terraform apply -var-file=tfvars.json -auto-approve
+
+  deploy-testnet-prod:
+    needs: [deploy-testnet-staging]
+    runs-on: ubuntu-latest
+    environment: testnet-prod
+    name: Deploy Infra to AWS
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Set up Terraform Version
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.4
+
+      - name: Terraform Init
+        working-directory: ./config/testnet-prod
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: ./config/testnet-prod
+        run: terraform plan -var-file=tfvars.json
+
+      - name: Terraform Deploy
+        working-directory: ./config/testnet-prod
+        run: terraform apply -var-file=tfvars.json -auto-approve
+
+  deploy-mainnet-prod:
+    needs: [deploy-testnet-prod]
+    runs-on: ubuntu-latest
+    environment: mainnet-prod
+    name: Deploy Infra to AWS
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Set up Terraform Version
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.4
+
+      - name: Terraform Init
+        working-directory: ./config/mainnet-prod
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: ./config/mainnet-prod
+        run: terraform plan -var-file=tfvars.json
+
+      - name: Terraform Deploy
+        working-directory: ./config/mainnet-prod
         run: terraform apply -var-file=tfvars.json -auto-approve
