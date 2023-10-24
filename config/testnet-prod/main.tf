@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "connext-terraform-watcher-v2-mainnet-prod"
+    bucket = "connext-terraform-watcher-v2-testnet-prod"
     key    = "state"
     region = "eu-central-1"
   }

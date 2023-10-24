@@ -3,5 +3,6 @@
   "ecs_cluster_name_prefix": "connext-watcher-v2",
   "environment": "testnet-staging",
   "private_key": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-  "server_admin_token": "foo"
+  "server_admin_token": "foo",
+  "full_image_name_watcher": "ghcr.io/connext/watcher:sha-b5bb49a"
 }

@@ -26,7 +26,6 @@ variable "project_tag" {
 variable "full_image_name_watcher" {
   type        = string
   description = "watcher image name"
-  default     = "ghcr.io/connext/watcher:sha-b5bb49a"
 }
 
 variable "github_token" {
