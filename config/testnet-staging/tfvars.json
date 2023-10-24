@@ -1,8 +1,7 @@
 {
   "region": "eu-central-1",
-  "base_domain": "connextapi.com",
-  "ecs_cluster_name": "connext-watcher-v2-devnet",
-  "environment": "devnet",
+  "ecs_cluster_name_prefix": "connext-watcher-v2",
+  "environment": "testnet-staging",
   "private_key": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
   "server_admin_token": "foo"
 }

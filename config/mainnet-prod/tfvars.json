@@ -1,0 +1,6 @@
+{
+  "region": "eu-central-1",
+  "base_domain": "connextapi.com",
+  "ecs_cluster_name_prefix": "connext-watcher-v2",
+  "environment": "mainnet-prod"
+}

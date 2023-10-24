@@ -2,7 +2,7 @@ locals {
   watcher_env_vars = [
     # production environment variables
     { name = "LOG_LEVEL", value = var.log_level != null ? var.log_level : "debug" },
-    { name = "ENVIRONMENT", value = var.environment != null ? var.environment : "production" },
+    { name = "ENVIRONMENT", value = "production" },
     { name = "ASSET_CHECK_INTERVAL", value = var.asset_check_interval },
     { name = "UPDATE_VARIABLE_INTERVAL", value = var.update_variable_interval },
     { name = "GAS_MULTIPLIER", value = var.gas_multiplier },
