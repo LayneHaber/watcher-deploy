@@ -2,10 +2,6 @@ variable "execution_role_arn" {}
 variable "cluster_id" {}
 variable "vpc_id" {}
 
-variable "private_subnets" {
-  type = list(string)
-}
-
 variable "lb_subnets" {
   type = list(string)
 }
@@ -77,16 +73,16 @@ variable "container_env_vars" {
 }
 
 variable "github_token" {
-  type    = string
+  type        = string
   description = "Github token used to read docker image from private github registry. Generate github personal access token with read:packages access."
 }
 
 variable "redis_url" {
-  type    = string
+  type        = string
   description = "Redis url."
 }
 
 variable "redis_port" {
-  type    = string
+  type        = string
   description = "Redis port."
 }

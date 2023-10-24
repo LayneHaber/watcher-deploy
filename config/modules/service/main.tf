@@ -14,8 +14,8 @@ module "acm_request_certificate" {
 resource "aws_cloudwatch_log_group" "container" {
   name = var.container_family
   tags = {
-    Family = var.container_family
-    Project = var.project_tag
+    Family      = var.container_family
+    Project     = var.project_tag
     Environment = var.environment
   }
 }
@@ -37,16 +37,16 @@ resource "aws_ecs_task_definition" "service" {
   memory                   = var.memory
   execution_role_arn       = var.execution_role_arn
   tags = {
-    Family = var.container_family
-    Project = var.project_tag
+    Family      = var.container_family
+    Project     = var.project_tag
     Environment = var.environment
   }
   container_definitions = jsonencode([
     {
-      name        = var.container_family
-      image       = var.docker_image
-      cpu         = var.cpu
-      memory      = var.memory
+      name   = var.container_family
+      image  = var.docker_image
+      cpu    = var.cpu
+      memory = var.memory
       environment = concat(var.container_env_vars, [
         { name = "REDIS_URL", value = "redis://${var.redis_url}:${var.redis_port}" },
       ])
@@ -85,8 +85,9 @@ resource "aws_ecs_service" "service" {
   task_definition = "${aws_ecs_task_definition.service.family}:${max("${aws_ecs_task_definition.service.revision}", "${aws_ecs_task_definition.service.revision}")}"
 
   network_configuration {
-    security_groups = flatten([var.service_security_groups, aws_security_group.lb.id])
-    subnets         = var.private_subnets
+    security_groups  = flatten([var.service_security_groups, aws_security_group.lb.id])
+    subnets          = var.lb_subnets
+    assign_public_ip = true
   }
 
   load_balancer {
@@ -102,8 +103,8 @@ resource "aws_alb" "lb" {
   enable_deletion_protection = false
   idle_timeout               = var.timeout
   tags = {
-    Family = var.container_family
-    Project = var.project_tag
+    Family      = var.container_family
+    Project     = var.project_tag
     Environment = var.environment
   }
 }
@@ -125,8 +126,8 @@ resource "aws_alb_target_group" "front_end" {
     create_before_destroy = true
   }
   tags = {
-    Family = var.container_family
-    Project = var.project_tag
+    Family      = var.container_family
+    Project     = var.project_tag
     Environment = var.environment
   }
 }
@@ -143,8 +144,8 @@ resource "aws_lb_listener" "https" {
     target_group_arn = aws_alb_target_group.front_end.arn
   }
   tags = {
-    Family = var.container_family
-    Project = var.project_tag
+    Family      = var.container_family
+    Project     = var.project_tag
     Environment = var.environment
   }
 }
@@ -170,10 +171,10 @@ resource "aws_security_group" "lb" {
     cidr_blocks = var.allow_all_cdir_blocks
   }
   tags = {
-    Family = var.container_family
-    Project = var.project_tag
+    Family      = var.container_family
+    Project     = var.project_tag
     Environment = var.environment
-    
+
   }
 }
 
