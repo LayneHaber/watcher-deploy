@@ -26,7 +26,7 @@ module "watcher" {
   vpc_id                   = module.network.vpc_id
   lb_subnets               = module.network.public_subnets
   docker_image             = var.full_image_name_watcher
-  container_family         = var.ecs_cluster_name
+  container_family         = "watcher-v2"
   project_tag              = var.project_tag
   environment              = var.environment
   health_check_path        = "/ping"
@@ -59,14 +59,14 @@ module "redis_cache" {
 }
 
 module "network" {
-  source           = "../../modules/networking"
+  source           = "../modules/networking"
   cidr_block       = var.cidr_block
-  ecs_cluster_name = var.ecs_cluster_name
+  ecs_cluster_name = module.ecs.ecs_cluster_name
 }
 
 
 module "ecs" {
-  source                  = "../../modules/ecs"
+  source                  = "../modules/ecs"
   ecs_cluster_name_prefix = var.ecs_cluster_name_prefix
   project_tag             = var.project_tag
   environment             = var.environment
@@ -74,6 +74,6 @@ module "ecs" {
 
 
 module "iam" {
-  source           = "../../modules/iam"
-  ecs_cluster_name = var.ecs_cluster_name
+  source           = "../modules/iam"
+  ecs_cluster_name = module.ecs.ecs_cluster_name
 }

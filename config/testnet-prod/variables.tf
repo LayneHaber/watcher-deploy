@@ -14,8 +14,8 @@ variable "base_domain" {
   description = "Base domain of the application"
 }
 
-variable "ecs_cluster_name" {
-  description = "Cluster name"
+variable "ecs_cluster_name_prefix" {
+  description = "Cluster name prefix"
 }
 
 variable "project_tag" {
