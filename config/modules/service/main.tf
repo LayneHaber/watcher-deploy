@@ -92,7 +92,7 @@ resource "aws_ecs_service" "service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.front_end.id
-    container_name   = var.container_family
+    container_name   = "${var.environment}-${var.container_family}"
     container_port   = var.container_port
   }
 }

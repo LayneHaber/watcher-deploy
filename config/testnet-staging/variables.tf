@@ -79,8 +79,8 @@ variable "pager_duty_routing_key" {
 }
 
 variable "server_port" {
-  type    = string
-  default = null
+  type    = number
+  default = 8080
 }
 
 variable "server_host" {

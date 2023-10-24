@@ -30,7 +30,7 @@ module "watcher" {
   project_tag              = var.project_tag
   environment              = var.environment
   health_check_path        = "/ping"
-  container_port           = 8080
+  container_port           = var.server_port
   loadbalancer_port        = 80
   cpu                      = 1024
   memory                   = 2048

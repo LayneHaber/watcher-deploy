@@ -3,5 +3,5 @@
   "base_domain": "connextapi.com",
   "ecs_cluster_name_prefix": "connext-watcher-v2",
   "environment": "testnet-prod",
-  "full_image_name_watcher": "ghcr.io/connext/watcher:sha-b5bb49a"
+  "full_image_name_watcher": "ghcr.io/connext/watcher-v2:sha-4a14737"
 }
