@@ -3,11 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - main-v2-NO-DEPLOY
+      - main-v2
 
 env:
   TF_VAR_log_level: ${{ secrets.LOG_LEVEL }}
-  TF_VAR_environment: ${{ secrets.ENVIRONMENT }}
   TF_VAR_asset_check_interval: ${{ secrets.ASSET_CHECK_INTERVAL }}
   TF_VAR_update_variable_interval: ${{ secrets.UPDATE_VARIABLE_INTERVAL }}
   TF_VAR_gas_multiplier: ${{ secrets.GAS_MULTIPLIER }}
