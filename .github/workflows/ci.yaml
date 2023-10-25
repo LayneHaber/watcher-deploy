@@ -6,7 +6,7 @@ on:
       - main-v2
 
 env:
-  TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
+  TF_VAR_github_token: ${{ secrets.GH_PAT_TOKEN }}
   TF_VAR_tenderly_access_key: ${{ secrets.TENDERLY_ACCESS_KEY }}
   TF_VAR_tenderly_account_id: ${{ secrets.TENDERLY_ACCOUNT_ID }}
   TF_VAR_tenderly_project_slug: ${{ secrets.TENDERLY_PROJECT_SLUG }}
