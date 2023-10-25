@@ -12,7 +12,7 @@ module "acm_request_certificate" {
 }
 
 resource "aws_cloudwatch_log_group" "container" {
-  name = var.container_family
+  name = "${var.container_family}-${var.environment}"
   tags = {
     Family      = var.container_family
     Project     = var.project_tag
@@ -21,7 +21,7 @@ resource "aws_cloudwatch_log_group" "container" {
 }
 
 resource "aws_secretsmanager_secret" "github_creds" {
-  name = "github_creds"
+  name = "github-creds-${var.environment}"
 }
 
 resource "aws_secretsmanager_secret_version" "github_creds" {
@@ -30,7 +30,7 @@ resource "aws_secretsmanager_secret_version" "github_creds" {
 }
 
 resource "aws_ecs_task_definition" "service" {
-  family                   = var.container_family
+  family                   = "${var.environment}-${var.container_family}"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = var.cpu
@@ -43,7 +43,7 @@ resource "aws_ecs_task_definition" "service" {
   }
   container_definitions = jsonencode([
     {
-      name   = var.container_family
+      name   = "${var.environment}-${var.container_family}"
       image  = var.docker_image
       cpu    = var.cpu
       memory = var.memory
@@ -74,7 +74,7 @@ resource "aws_ecs_task_definition" "service" {
 
 
 resource "aws_ecs_service" "service" {
-  name          = var.container_family
+  name          = "${var.environment}-${var.container_family}"
   cluster       = var.cluster_id
   desired_count = var.instance_count
 
@@ -92,7 +92,7 @@ resource "aws_ecs_service" "service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.front_end.id
-    container_name   = var.container_family
+    container_name   = "${var.environment}-${var.container_family}"
     container_port   = var.container_port
   }
 }
@@ -180,7 +180,7 @@ resource "aws_security_group" "lb" {
 
 resource "aws_route53_record" "www" {
   zone_id = data.aws_route53_zone.default.zone_id
-  name    = "${var.container_family}.${var.base_domain}"
+  name    = "${var.container_family}.${var.environment}.${var.base_domain}"
   type    = "CNAME"
   ttl     = "300"
   records = [aws_alb.lb.dns_name]

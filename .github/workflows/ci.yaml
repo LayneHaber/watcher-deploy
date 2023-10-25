@@ -5,34 +5,33 @@ on:
     branches:
       - main-v2
 
-jobs:
-  deploy-infra:
-    environment: production
-    env:
-      TF_VAR_log_level: ${{ secrets.LOG_LEVEL }}
-      TF_VAR_environment: ${{ secrets.ENVIRONMENT }}
-      TF_VAR_asset_check_interval: ${{ secrets.ASSET_CHECK_INTERVAL }}
-      TF_VAR_update_variable_interval: ${{ secrets.UPDATE_VARIABLE_INTERVAL }}
-      TF_VAR_gas_multiplier: ${{ secrets.GAS_MULTIPLIER }}
-      TF_VAR_private_key: ${{ secrets.PRIVATE_KEY }}
-      TF_VAR_web3_signer_url: ${{ secrets.WEB3_SIGNER_URL }}
-      TF_VAR_discord_hook_url: ${{ secrets.DISCORD_HOOK_URL }}
-      TF_VAR_pager_duty_routing_key: ${{ secrets.PAGER_DUTY_ROUTING_KEY }}
-      TF_VAR_server_port: ${{ secrets.SERVER_PORT }}
-      TF_VAR_server_host: ${{ secrets.SERVER_HOST }}
-      TF_VAR_server_admin_token: ${{ secrets.SERVER_ADMIN_TOKEN }}
-      TF_VAR_twilio_number: ${{ secrets.TWILIO_NUMBER }}
-      TF_VAR_twilio_to_phone_numbers: ${{ secrets.TWILIO_TO_PHONE_NUMBERS }}
-      TF_VAR_twilio_account_sid: ${{ secrets.TWILIO_ACCOUNT_SID }}
-      TF_VAR_twilio_auth_token: ${{ secrets.TWILIO_AUTH_TOKEN }}
-      TF_VAR_telegram_chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
-      TF_VAR_telegram_api_key: ${{ secrets.TELEGRAM_API_KEY }}
-      TF_VAR_better_uptime_email: ${{ secrets.BETTER_UPTIME_EMAIL }}
-      TF_VAR_better_uptime_api_key: ${{ secrets.BETTER_UPTIME_API_KEY }}
-      TF_VAR_custom_rpc_providers: ${{ secrets.CUSTOM_RPC_PROVIDERS }}
-      TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
+env:
+  TF_VAR_log_level: ${{ secrets.LOG_LEVEL }}
+  TF_VAR_asset_check_interval: ${{ secrets.ASSET_CHECK_INTERVAL }}
+  TF_VAR_update_variable_interval: ${{ secrets.UPDATE_VARIABLE_INTERVAL }}
+  TF_VAR_gas_multiplier: ${{ secrets.GAS_MULTIPLIER }}
+  TF_VAR_private_key: ${{ secrets.PRIVATE_KEY }}
+  TF_VAR_web3_signer_url: ${{ secrets.WEB3_SIGNER_URL }}
+  TF_VAR_discord_hook_url: ${{ secrets.DISCORD_HOOK_URL }}
+  TF_VAR_pager_duty_routing_key: ${{ secrets.PAGER_DUTY_ROUTING_KEY }}
+  TF_VAR_server_port: ${{ secrets.SERVER_PORT }}
+  TF_VAR_server_host: ${{ secrets.SERVER_HOST }}
+  TF_VAR_server_admin_token: ${{ secrets.SERVER_ADMIN_TOKEN }}
+  TF_VAR_twilio_number: ${{ secrets.TWILIO_NUMBER }}
+  TF_VAR_twilio_to_phone_numbers: ${{ secrets.TWILIO_TO_PHONE_NUMBERS }}
+  TF_VAR_twilio_account_sid: ${{ secrets.TWILIO_ACCOUNT_SID }}
+  TF_VAR_twilio_auth_token: ${{ secrets.TWILIO_AUTH_TOKEN }}
+  TF_VAR_telegram_chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
+  TF_VAR_telegram_api_key: ${{ secrets.TELEGRAM_API_KEY }}
+  TF_VAR_better_uptime_email: ${{ secrets.BETTER_UPTIME_EMAIL }}
+  TF_VAR_better_uptime_api_key: ${{ secrets.BETTER_UPTIME_API_KEY }}
+  TF_VAR_custom_rpc_providers: ${{ secrets.CUSTOM_RPC_PROVIDERS }}
+  TF_VAR_github_token: ${{ secrets.GITHUB_TOKEN }}
 
+jobs:
+  deploy-testnet-staging:
     runs-on: ubuntu-latest
+    environment: testnet-staging
     name: Deploy Infra to AWS
     steps:
       - name: Checkout code
@@ -51,10 +50,79 @@ jobs:
           terraform_version: 1.4.4
 
       - name: Terraform Init
+        working-directory: ./config/testnet-staging
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan -var-file=tfvars-production.json
+        working-directory: ./config/testnet-staging
+        run: terraform plan -var-file=tfvars.json
 
       - name: Terraform Deploy
-        run: terraform apply -var-file=tfvars-production.json -auto-approve
+        working-directory: ./config/testnet-staging
+        run: terraform apply -var-file=tfvars.json -auto-approve
+
+  deploy-testnet-prod:
+    needs: [deploy-testnet-staging]
+    runs-on: ubuntu-latest
+    environment: testnet-prod
+    name: Deploy Infra to AWS
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Set up Terraform Version
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.4
+
+      - name: Terraform Init
+        working-directory: ./config/testnet-prod
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: ./config/testnet-prod
+        run: terraform plan -var-file=tfvars.json
+
+      - name: Terraform Deploy
+        working-directory: ./config/testnet-prod
+        run: terraform apply -var-file=tfvars.json -auto-approve
+
+  deploy-mainnet-prod:
+    needs: [deploy-testnet-prod]
+    runs-on: ubuntu-latest
+    environment: mainnet-prod
+    name: Deploy Infra to AWS
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Set up Terraform Version
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.4
+
+      - name: Terraform Init
+        working-directory: ./config/mainnet-prod
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: ./config/mainnet-prod
+        run: terraform plan -var-file=tfvars.json
+
+      - name: Terraform Deploy
+        working-directory: ./config/mainnet-prod
+        run: terraform apply -var-file=tfvars.json -auto-approve

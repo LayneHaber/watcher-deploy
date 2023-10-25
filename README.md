@@ -5,16 +5,25 @@ This folder contains all the code necessary to deploy the watcher service to a b
 - Fully configured load balancing, port forwarding, and TLS
 - Autoscaling with ECS on [Fargate](https://aws.amazon.com/fargate/)
 - Reusable Infrastructure as Code, modularized as Terraform components
+- Per-env configuration, to allow deployment to different environments (e.g. testnet, mainnet, etc.)
 
 ## Scaffolding
 
 ```text
 .github/workflows/ci.yaml    <- CI Workflow
 config
- ├── main.tf                 <- Entrypoint for all the module instantiations
- ├── variables.tf            <- Required input variables
- ├── outputs.tf              <- Generated console outputs
- ├── config.tf               <- Configuration for service
+ ├── testnet-staging
+ │    ├── main.tf                 <- Entrypoint for testnet-staging configs
+ │    ├── variables.tf            <- Required input variables
+ │    ├── outputs.tf              <- Generated console outputs
+ │    ├── config.tf               <- Configuration for service
+ │    └── tfvars.json             <- Per-env variables for terraform
+ ├── testnet-prod
+ │    ├── main.tf                 <- Entrypoint for testnet-staging configs
+ │    ...
+ ├── mainnet-prod
+ │    ├── main.tf                 <- Entrypoint for testnet-staging configs
+ │    ...
  └── modules
       ├── service            <- Generic, configurable ECS service
       ├── ecs                <- ECS cluster definition
@@ -69,7 +78,7 @@ The base domain, of your hosted zone e.g. `connext.ninja`
 
 Fetch it from the desired release on Connext's [Github Packages](https://github.com/connext/monorepo/pkgs/container/watcher), e.g. `ghcr.io/connext/watcher:sha-bab495d`
 
-**3.1.3. ECS Cluster Name** (`ecs_cluster_name`) \[REQUIRED\]
+**3.1.3. ECS Cluster Name Prefix** (`ecs_cluster_name_prefix`) \[REQUIRED\]
 
 Name of the cluster. Must not contain spaces. E.g. `watcher-deploy`
 
@@ -91,9 +100,10 @@ Make sure to edit the `ci.yaml` accordingly, if you plan on using the optional (
 
 Deployment should occur only via CI/CD with Github Actions. However, it is also possible to deploy the infra from a local set up in order to test it in Tenderly Devnets. Ensure you have the right AWS credentials and `terraform 1.4.4` installed as described above.
 
-**Pre-requirement:** Go to the watcher repository and spin up a testnet using the "How to run the Devnets" section. By default in the `tfvars-devnet.json` the private key is pointed to this address: `0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266` which is a hardhat default account.
+**Pre-requirement:** Go to the watcher repository and spin up a testnet using the "How to run the Devnets" section. By default in the `config/testnet-staging/tfvars.json` the private key is pointed to this address: `0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266` which is a hardhat default account.
 
 After that, you'll need to have set the secrets to your environment:
+
 ```shell
 export TF_VAR_private_key="0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
 export TF_VAR_server_admin_token="foo"
@@ -108,18 +118,18 @@ export TF_VAR_custom_rpc_providers="<The Devnet RPCs given by the devnet spawn c
 In order to setup your devnet watcher environment in AWS use:
 
 ```shell
+>>> cd config/testnet-staging
 >>> terraform init
 ```
 
 Plan the changes:
 
 ```shell
->>> terraform plan -var-file=tfvars-devnet.json
+>>> terraform plan -var-file=tfvars.json
 ```
 
-To set custom variables, you can set them with `export TF_ENV_<variable_name>=<variable value>` or use the `tfvars-devnet.json` file.
+To set custom variables, you can set them with `export TF_ENV_<variable_name>=<variable value>` or use the `tfvars.json` file.
 
 ```shell
->>> terraform apply -var-file=tfvars-devnet.json -auto-approve
+>>> terraform apply -var-file=tfvars.json -auto-approve
 ```
-

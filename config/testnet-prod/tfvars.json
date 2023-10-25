@@ -1,0 +1,7 @@
+{
+  "region": "eu-central-1",
+  "ecs_cluster_name_prefix": "connext-watcher-v2",
+  "environment": "testnet-prod",
+  "base_domain": "connextapi.com",
+  "full_image_name_watcher": "ghcr.io/connext/watcher-v2:sha-4a14737"
+}

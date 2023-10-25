@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "connext-terraform-watcher-v2"
+    bucket = "connext-terraform-watcher-v2-testnet-prod"
     key    = "state"
     region = "eu-central-1"
   }
@@ -19,18 +19,18 @@ data "aws_caller_identity" "current" {}
 
 
 module "watcher" {
-  source                   = "./config/modules/service"
+  source                   = "../modules/service"
   region                   = var.region
   execution_role_arn       = module.iam.execution_role_arn
   cluster_id               = module.ecs.ecs_cluster_id
   vpc_id                   = module.network.vpc_id
   lb_subnets               = module.network.public_subnets
   docker_image             = var.full_image_name_watcher
-  container_family         = var.ecs_cluster_name
+  container_family         = "watcher-v2"
   project_tag              = var.project_tag
   environment              = var.environment
   health_check_path        = "/ping"
-  container_port           = 8080
+  container_port           = var.server_port
   loadbalancer_port        = 80
   cpu                      = 1024
   memory                   = 2048
@@ -47,7 +47,7 @@ module "watcher" {
 }
 
 module "redis_cache" {
-  source                        = "./config/modules/redis"
+  source                        = "../modules/redis"
   family                        = var.project_tag
   sg_id                         = module.network.ecs_task_sg
   vpc_id                        = module.network.vpc_id
@@ -59,21 +59,21 @@ module "redis_cache" {
 }
 
 module "network" {
-  source           = "./config/modules/networking"
+  source           = "../modules/networking"
   cidr_block       = var.cidr_block
-  ecs_cluster_name = var.ecs_cluster_name
+  ecs_cluster_name = module.ecs.ecs_cluster_name
 }
 
 
 module "ecs" {
-  source           = "./config/modules/ecs"
-  ecs_cluster_name = var.ecs_cluster_name
-  project_tag      = var.project_tag
-  environment      = var.environment
+  source                  = "../modules/ecs"
+  ecs_cluster_name_prefix = var.ecs_cluster_name_prefix
+  project_tag             = var.project_tag
+  environment             = var.environment
 }
 
 
 module "iam" {
-  source           = "./config/modules/iam"
-  ecs_cluster_name = var.ecs_cluster_name
+  source           = "../modules/iam"
+  ecs_cluster_name = module.ecs.ecs_cluster_name
 }

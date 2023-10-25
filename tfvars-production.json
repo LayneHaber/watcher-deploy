@@ -1,6 +1,0 @@
-{
-  "region": "eu-central-1",
-  "base_domain": "connextapi.com",
-  "ecs_cluster_name": "connext-watcher-v2-production",
-  "environment": "production"
-}
