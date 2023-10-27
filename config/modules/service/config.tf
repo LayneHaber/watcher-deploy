@@ -1,4 +1,5 @@
 locals {
+
   DEFAULT_LOG_CONFIG = {
     logDriver = "awslogs",
     options = {
@@ -17,6 +18,28 @@ locals {
       dd_tags    = "environment:${var.environment},service:${var.container_family}",
       TLS        = "on",
       provider   = "ecs"
+    }
+  }
+
+  DEFAULT_CONTAINER_DEF = {
+    name   = "${var.environment}-${var.container_family}"
+    image  = var.docker_image
+    cpu    = var.cpu
+    memory = var.memory
+    environment = concat(var.container_env_vars, [
+      { name = "REDIS_URL", value = "redis://${var.redis_url}:${var.redis_port}" },
+      var.enable_dd_logging ? { name = "DD_SERVICE", value = var.container_family } : {},
+    ])
+    networkMode      = "awsvpc"
+    logConfiguration = var.enable_dd_logging ? local.DD_LOG_CONFIG : local.DEFAULT_LOG_CONFIG
+    portMappings = [
+      {
+        containerPort = var.container_port
+        hostPort      = var.container_port
+      }
+    ]
+    repositoryCredentials = {
+      credentialsParameter = aws_secretsmanager_secret.github_creds.arn
     }
   }
   DD_CONTAINER_DEF = {
@@ -92,4 +115,6 @@ locals {
       }
     }
   }
+  DD_ENABLED_CONTAINER_DEF  = jsonencode([local.DEFAULT_CONTAINER_DEF, local.DD_CONTAINER_DEF, local.FLUENT_BIT_CONTAINER_DEF])
+  DD_DISABLED_CONTAINER_DEF = jsonencode([local.DEFAULT_CONTAINER_DEF])
 }
