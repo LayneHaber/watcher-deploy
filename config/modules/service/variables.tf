@@ -86,3 +86,14 @@ variable "redis_port" {
   type        = string
   description = "Redis port."
 }
+
+variable "dd_api_key" {
+  type        = string
+  description = "Datadog API key."
+}
+
+variable "enable_dd_logging" {
+  type        = bool
+  default     = false
+  description = "Enable datadog logging. Otherwise, default to CW."
+}

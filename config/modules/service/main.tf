@@ -49,16 +49,10 @@ resource "aws_ecs_task_definition" "service" {
       memory = var.memory
       environment = concat(var.container_env_vars, [
         { name = "REDIS_URL", value = "redis://${var.redis_url}:${var.redis_port}" },
+        var.enable_dd_logging ? { name = "DD_SERVICE", value = var.container_family } : {},
       ])
-      networkMode = "awsvpc"
-      logConfiguration = {
-        logDriver = "awslogs",
-        options = {
-          awslogs-group         = aws_cloudwatch_log_group.container.name,
-          awslogs-region        = var.region,
-          awslogs-stream-prefix = "logs"
-        }
-      }
+      networkMode      = "awsvpc"
+      logConfiguration = var.enable_dd_logging ? local.DD_LOG_CONFIG : local.DEFAULT_LOG_CONFIG
       portMappings = [
         {
           containerPort = var.container_port
@@ -68,7 +62,8 @@ resource "aws_ecs_task_definition" "service" {
       repositoryCredentials = {
         credentialsParameter = aws_secretsmanager_secret.github_creds.arn
       }
-    }
+    },
+    var.enable_dd_logging ? [local.DD_CONTAINER_DEF, local.FLUENT_BIT_CONTAINER_DEF] : []
   ])
 }
 
