@@ -41,35 +41,7 @@ resource "aws_ecs_task_definition" "service" {
     Project     = var.project_tag
     Environment = var.environment
   }
-  container_definitions = jsonencode([
-    {
-      name   = "${var.environment}-${var.container_family}"
-      image  = var.docker_image
-      cpu    = var.cpu
-      memory = var.memory
-      environment = concat(var.container_env_vars, [
-        { name = "REDIS_URL", value = "redis://${var.redis_url}:${var.redis_port}" },
-      ])
-      networkMode = "awsvpc"
-      logConfiguration = {
-        logDriver = "awslogs",
-        options = {
-          awslogs-group         = aws_cloudwatch_log_group.container.name,
-          awslogs-region        = var.region,
-          awslogs-stream-prefix = "logs"
-        }
-      }
-      portMappings = [
-        {
-          containerPort = var.container_port
-          hostPort      = var.container_port
-        }
-      ]
-      repositoryCredentials = {
-        credentialsParameter = aws_secretsmanager_secret.github_creds.arn
-      }
-    }
-  ])
+  container_definitions = var.enable_dd_logging ? local.DD_ENABLED_CONTAINER_DEF : local.DD_DISABLED_CONTAINER_DEF
 }
 
 
