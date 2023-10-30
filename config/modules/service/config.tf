@@ -15,7 +15,7 @@ locals {
       apiKey     = var.dd_api_key,
       dd_service = var.container_family,
       dd_source  = "fargate-app",
-      dd_tags    = "environment:${var.environment},service:${var.container_family}",
+      dd_tags    = "env:${var.environment},environment:${var.environment},service:${var.container_family}",
       TLS        = "on",
       provider   = "ecs"
     }
