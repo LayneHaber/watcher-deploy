@@ -169,3 +169,9 @@ variable "tenderly_project_slug" {
   type    = string
   default = null
 }
+
+variable "dd_api_key" {
+  type        = string
+  default     = null
+  description = "Datadog API key."
+}

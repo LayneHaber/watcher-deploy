@@ -44,6 +44,8 @@ module "watcher" {
   github_token             = var.github_token
   redis_url                = module.redis_cache.redis_instance_address
   redis_port               = module.redis_cache.redis_instance_port
+  enable_dd_logging        = true
+  dd_api_key               = var.dd_api_key
 }
 
 module "redis_cache" {
