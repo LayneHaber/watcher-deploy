@@ -80,6 +80,7 @@ jobs:
       TF_VAR_log_level: "debug"
       TF_VAR_private_key: ${{ secrets.PRIVATE_KEY }}
       TF_VAR_server_admin_token: ${{ secrets.SERVER_ADMIN_TOKEN }}
+      TF_VAR_dd_api_key: ${{ secrets.DD_API_KEY }}
     name: Deploy Infra to AWS
     steps:
       - name: Checkout code
@@ -116,6 +117,7 @@ jobs:
     env:
       TF_VAR_private_key: ${{ secrets.PRIVATE_KEY }}
       TF_VAR_server_admin_token: ${{ secrets.SERVER_ADMIN_TOKEN }}
+      TF_VAR_dd_api_key: ${{ secrets.DD_API_KEY }}
     name: Deploy Infra to AWS
     steps:
       - name: Checkout code
