@@ -92,9 +92,3 @@ variable "dd_api_key" {
   default     = null
   description = "Datadog API key."
 }
-
-variable "enable_dd_logging" {
-  type        = bool
-  default     = false
-  description = "Enable datadog logging. Otherwise, default to CW."
-}
