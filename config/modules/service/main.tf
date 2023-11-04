@@ -41,7 +41,7 @@ resource "aws_ecs_task_definition" "service" {
     Project     = var.project_tag
     Environment = var.environment
   }
-  container_definitions = var.enable_dd_logging ? local.DD_ENABLED_CONTAINER_DEF : local.DD_DISABLED_CONTAINER_DEF
+  container_definitions = var.dd_api_key != null ? local.DD_ENABLED_CONTAINER_DEF : local.DD_DISABLED_CONTAINER_DEF
 }
 
 

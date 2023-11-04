@@ -28,10 +28,10 @@ locals {
     memory = var.memory
     environment = concat(var.container_env_vars, [
       { name = "REDIS_URL", value = "redis://${var.redis_url}:${var.redis_port}" },
-      var.enable_dd_logging ? { name = "DD_SERVICE", value = var.container_family } : {},
+      { name = "DD_SERVICE", value = var.container_family }
     ])
     networkMode      = "awsvpc"
-    logConfiguration = var.enable_dd_logging ? local.DD_LOG_CONFIG : local.DEFAULT_LOG_CONFIG
+    logConfiguration = var.dd_api_key != null ? local.DD_LOG_CONFIG : local.DEFAULT_LOG_CONFIG
     portMappings = [
       {
         containerPort = var.container_port
