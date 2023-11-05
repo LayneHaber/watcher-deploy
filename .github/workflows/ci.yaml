@@ -111,7 +111,7 @@ jobs:
   #       run: terraform apply -var-file=tfvars.json -auto-approve
 
   deploy-mainnet-prod:
-    needs: [deploy-testnet-prod]
+    # needs: [deploy-testnet-prod]
     runs-on: ubuntu-latest
     environment: mainnet-prod
     env:
