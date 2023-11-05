@@ -2,7 +2,7 @@ terraform {
   backend "s3" {
     bucket = "connext-terraform-watcher-v2-mainnet-prod"
     key    = "state"
-    region = "eu-central-1"
+    region = "us-east-1"
   }
   required_version = "~> 1.4.4"
 }
