@@ -1,6 +1,6 @@
 {
-  "region": "eu-central-1",
-  "base_domain": "connextapi.com",
+  "region": "us-east-1",
+  "base_domain": "layne-georgie.com",
   "ecs_cluster_name_prefix": "connext-watcher-v2",
   "environment": "mainnet-prod",
   "full_image_name_watcher": "ghcr.io/connext/watcher-v2:sha-4a14737"

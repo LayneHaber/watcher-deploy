@@ -35,42 +35,42 @@ env:
   # TF_VAR_custom_rpc_providers: ${{ secrets.CUSTOM_RPC_PROVIDERS }}
 
 jobs:
-  deploy-testnet-staging:
-    runs-on: ubuntu-latest
-    environment: testnet-staging
-    env:
-      TF_VAR_log_level: "debug"
-      TF_VAR_private_key: ${{ secrets.PRIVATE_KEY }}
-      TF_VAR_server_admin_token: ${{ secrets.SERVER_ADMIN_TOKEN }}
-      TF_VAR_dd_api_key: ${{ secrets.DD_API_KEY }}
-    name: Deploy Infra to AWS
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  # deploy-testnet-staging:
+  #   runs-on: ubuntu-latest
+  #   environment: testnet-staging
+  #   env:
+  #     TF_VAR_log_level: "debug"
+  #     TF_VAR_private_key: ${{ secrets.PRIVATE_KEY }}
+  #     TF_VAR_server_admin_token: ${{ secrets.SERVER_ADMIN_TOKEN }}
+  #     TF_VAR_dd_api_key: ${{ secrets.DD_API_KEY }}
+  #   name: Deploy Infra to AWS
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
 
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
+  #     - name: Set up AWS CLI
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: eu-central-1
 
-      - name: Set up Terraform Version
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.4.4
+  #     - name: Set up Terraform Version
+  #       uses: hashicorp/setup-terraform@v2
+  #       with:
+  #         terraform_version: 1.4.4
 
-      - name: Terraform Init
-        working-directory: ./config/testnet-staging
-        run: terraform init
+  #     - name: Terraform Init
+  #       working-directory: ./config/testnet-staging
+  #       run: terraform init
 
-      - name: Terraform Plan
-        working-directory: ./config/testnet-staging
-        run: terraform plan -var-file=tfvars.json
+  #     - name: Terraform Plan
+  #       working-directory: ./config/testnet-staging
+  #       run: terraform plan -var-file=tfvars.json
 
-      - name: Terraform Deploy
-        working-directory: ./config/testnet-staging
-        run: terraform apply -var-file=tfvars.json -auto-approve
+  #     - name: Terraform Deploy
+  #       working-directory: ./config/testnet-staging
+  #       run: terraform apply -var-file=tfvars.json -auto-approve
 
   # deploy-testnet-prod:
   #   needs: [deploy-testnet-staging]
@@ -110,39 +110,39 @@ jobs:
   #       working-directory: ./config/testnet-prod
   #       run: terraform apply -var-file=tfvars.json -auto-approve
 
-  # deploy-mainnet-prod:
-  #   needs: [deploy-testnet-prod]
-  #   runs-on: ubuntu-latest
-  #   environment: mainnet-prod
-  #   env:
-  #     TF_VAR_private_key: ${{ secrets.PRIVATE_KEY }}
-  #     TF_VAR_server_admin_token: ${{ secrets.SERVER_ADMIN_TOKEN }}
-  #     TF_VAR_dd_api_key: ${{ secrets.DD_API_KEY }}
-  #   name: Deploy Infra to AWS
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
+  deploy-mainnet-prod:
+    needs: [deploy-testnet-prod]
+    runs-on: ubuntu-latest
+    environment: mainnet-prod
+    env:
+      TF_VAR_private_key: ${{ secrets.PRIVATE_KEY }}
+      TF_VAR_server_admin_token: ${{ secrets.SERVER_ADMIN_TOKEN }}
+      TF_VAR_dd_api_key: ${{ secrets.DD_API_KEY }}
+    name: Deploy Infra to AWS
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-  #     - name: Set up AWS CLI
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: eu-central-1
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
 
-  #     - name: Set up Terraform Version
-  #       uses: hashicorp/setup-terraform@v2
-  #       with:
-  #         terraform_version: 1.4.4
+      - name: Set up Terraform Version
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.4
 
-  #     - name: Terraform Init
-  #       working-directory: ./config/mainnet-prod
-  #       run: terraform init
+      - name: Terraform Init
+        working-directory: ./config/mainnet-prod
+        run: terraform init
 
-  #     - name: Terraform Plan
-  #       working-directory: ./config/mainnet-prod
-  #       run: terraform plan -var-file=tfvars.json
+      - name: Terraform Plan
+        working-directory: ./config/mainnet-prod
+        run: terraform plan -var-file=tfvars.json
 
-  #     - name: Terraform Deploy
-  #       working-directory: ./config/mainnet-prod
-  #       run: terraform apply -var-file=tfvars.json -auto-approve
+      - name: Terraform Deploy
+        working-directory: ./config/mainnet-prod
+        run: terraform apply -var-file=tfvars.json -auto-approve
