@@ -137,7 +137,7 @@ jobs:
 
       - name: Terraform Init
         working-directory: ./config/mainnet-prod
-        run: terraform init
+        run: TF_LOG="debug" terraform init
 
       - name: Terraform Plan
         working-directory: ./config/mainnet-prod
